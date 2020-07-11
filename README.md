@@ -15,10 +15,9 @@ examples:<br>
 - Linux path - /home/\<USERNAME\>/.arduino15/packages/STM32/hardware/stm32/1.9.0/   
 - Mac path - /Users/\<USERNAME\>/Library/Arduino15/packages\STM32\hardware\stm32\1.9.0\
 where "1.9.0" is version of core library.  
-Copy board directory 'BIGTREE_F207VCT6' with files to 'variants' directory.
-
+Copy board directory 'BIGTREE_F207VCT6' with files to the 'variants' directory.
 	
-3. Add this lines to board.txt file
+3. Add these lines to board.txt file *those it matter where these lines are copied or must they be added to the end of file?*
 	%AppData%\Local\Arduino15\packages\STM32\hardware\stm32\1.9.0\board.txt
 
 ```
@@ -52,9 +51,10 @@ Some board hardware pins can be found on board connectors (EXP1, EXP2,EXP3), so 
 After flashing sketches you can`t restore board firmware from SD card. Use ST-link for restore. 
 In dump folder placed working dump of board memory.**
 
+*Can you indicate how to use ST Link do do this? Is it just connecting the USB cable to the board, or is any additional hardware needed* 
 
 
-# Board hardware
+# Board Hardware
 ## Serial interface on UART4 connector on the board
 pins:
 ```
@@ -97,8 +97,9 @@ This pin has alternative name LED_BUILTIN.
 ```
 
 Install library Adafruit_TFTLCD_16bit_STM32 or GxTFT from library folder.
-(Adafruit_TFTLCD_16bit_STM32 modifyed for supporting this board. 
+(Adafruit_TFTLCD_16bit_STM32 is modifyed for supporting this board. 
 In GxTFT library added support for this board)
+*Please indicate the difference between using these two libraries?* 
 
 example:  
 GxTFT library:  
@@ -130,12 +131,13 @@ FSMC GPIO Configuration, these pins can`t be used in sketches
   PD5   ------> FSMC_NWE
   PD7   ------> FSMC_NE1
  ```
-  
+*Does the user have to configure these pins themselves or is that already done in the libraries?* 
+
 ## Touchscreen
 Touchscreen connected to XPT2046 chip via software SPI interface.
 
 Install library SoftSPIB, available in Arduino Library Manager(https://github.com/red-scorp/SoftSPIB).
-Install library XPT2046_Touchscreen_SWSPI (fork of XPT2046_Touchscreen Paul Stoffregen library https://github.com/PaulStoffregen/XPT2046_Touchscreen ).
+Install library XPT2046_Touchscreen_SWSPI (fork of XPT2046_Touchscreen by Paul Stoffregen library https://github.com/PaulStoffregen/XPT2046_Touchscreen).
 
 example:  
 examples/TouchTest/TouchTest.ino
@@ -149,7 +151,7 @@ PE5	 XPT2046_SCK
 PE6	 XPT2046_CS 
 ```
 
-## Sdcard connector 
+## SDcard Connector 
 Install Adafruit_SPIFlash from Arduino Library Manager(also will be installed "SdFat_-_Adafruit_Fork" library)
 SD card can work with standart Arduino library "SD" via default "SPI" interface.(https://www.arduino.cc/en/reference/SD)
 
@@ -185,7 +187,7 @@ examples/CardInfo/CardInfo.ino for SD library
 
 ## W25Q64 flash                  
  Flash chip connected via hardware SPI3 interface
- My board has BoyaMicro BY25Q64AS 8MiB SPI flash. At now Adafruit_SPIFlash library(version 3.2.0) does not support him.
+ My board has BoyaMicro BY25Q64AS 8MiB SPI flash. As of now Adafruit_SPIFlash library(version 3.2.0) does not support this chip.
  
  
  At first test your flash chip. 
@@ -199,8 +201,9 @@ JEDEC ID: 684017
 Flash size: 8388608
 
 ```
-if you see "Flash size: 0" that meat that your flash chip does not supported 
+if you see "Flash size: 0" that means that your flash chip is not supported 
 Lets add support of "JEDEC ID: 684017" chip if you have same.
+*NS -- OK I will check once I get back to the workshop*
 
 1. open Arduino libraries folder, search Adafruit_SPIFlash library folder. Open file
 "flash_devices.h" and add lines at the end of the file before last line "#endif // MICROPY_INCLUDED_ATMEL_SAMD_EXTERNAL_FLASH_DEVICES_H"
@@ -251,6 +254,7 @@ static const SPIFlash_Device_t possible_devices[] = {
 Than reflash flashinfo.ino sketch and check that size greater than zero.
 
 Also in library folder placed modified library. Just install it. 
+*Please clarify this, and provide instructions on how to install it?*
  
  
 pins:
@@ -291,7 +295,7 @@ PC9 ENCB
 
 
 ## USB port
-
+*Is this the usb port for the USB memeory stick, or the one that connects to the computer?*
 
 ## WS2812
  Board has 4 NEOPIXEL PIXELS
