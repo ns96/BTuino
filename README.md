@@ -1,7 +1,27 @@
 # Arduino STM32DUINO support for BIGTREETECH TFT35_E3_V3.0 board(BIGTREE_F207VCT6)
 
-board tested on STM32DUINO core library, version 1.9.0.
-Arduino IDE 1.8.12 and 1.8.13 
+Board tested with STM32DUINO core library, version 1.9.0.
+Arduino IDE 1.8.12 and 1.8.13
+
+# Table of Contents
+
+<!-- MarkdownTOC autolink="true" levels="1,2" -->
+
+- [Installation](#installation)
+- [Using board hardware](#using-board-hardware)
+- [Board Hardware](#board-hardware)
+  - [Serial interface on UART4 connector](#serial-interface-on-uart4-connector)
+  - [Buzzer](#buzzer)
+  - [LCD](#lcd)
+  - [Touchscreen](#touchscreen)
+  - [SDcard Connector](#sdcard-connector)
+  - [W25Q64 flash](#w25q64-flash)
+  - [Rotary encoder](#rotary-encoder)
+  - [USB port](#usb-port)
+  - [WS2812](#ws2812)
+
+<!-- /MarkdownTOC -->
+
 
 # Installation
 
@@ -9,81 +29,91 @@ Arduino IDE 1.8.12 and 1.8.13
 	https://github.com/stm32duino/wiki/wiki/Getting-Started
 
 2. Go to the source files directory of the STM32 core.  
-Source files directory can found here https://github.com/stm32duino/wiki/wiki/Where-are-sources#stm32-core-sources-files-location <br>
-examples:<br>
+Source files directory can be found here https://github.com/stm32duino/wiki/wiki/Where-are-sources#stm32-core-sources-files-location <br>
+
+Examples:
 - windows 10 path - %AppData%\Local\Arduino15\packages\STM32\hardware\stm32\1.9.0\
 - Linux path - /home/\<USERNAME\>/.arduino15/packages/STM32/hardware/stm32/1.9.0/   
-- Mac path - /Users/\<USERNAME\>/Library/Arduino15/packages\STM32\hardware\stm32\1.9.0\
+- Mac path - /Users/\<USERNAME\>/Library/Arduino15/packages/STM32/hardware/stm32/1.9.0/
+
 where "1.9.0" is version of core library.  
-Copy board directory 'BIGTREE_F207VCT6' with files to the 'variants' directory.
-	
-3. Add these lines to board.txt file *those it matter where these lines are copied or must they be added to the end of file?*
-	%AppData%\Local\Arduino15\packages\STM32\hardware\stm32\1.9.0\board.txt
 
-```
-#BIGTREE_F207VCT6 board
-3dprinter.menu.pnum.BIGTREE_F207VC=BIGTREE F207VCT6
-3dprinter.menu.pnum.BIGTREE_F207VC.upload.maximum_size=262144
-3dprinter.menu.pnum.BIGTREE_F207VC.upload.maximum_data_size=131072
-3dprinter.menu.pnum.BIGTREE_F207VC.build.mcu=cortex-m3
-3dprinter.menu.pnum.BIGTREE_F207VC.build.board=BIGTREE_F207VC
-3dprinter.menu.pnum.BIGTREE_F207VC.build.series=STM32F2xx
-3dprinter.menu.pnum.BIGTREE_F207VC.build.product_line=STM32F207xx
-3dprinter.menu.pnum.BIGTREE_F207VC.build.variant=BIGTREE_F207VC
-3dprinter.menu.pnum.BIGTREE_F207VC.build.cmsis_lib_gcc=arm_cortexM3l_math
+3. Copy file "boards.local.txt" to the STM32 core source files directory (see above).
 
-```
+4. Copy board directory 'BIGTREE_F207VCT6' with files to the 'variants' subdirectory.
 
-4. Restart Arduino IDE program. Go to 'boards manager' and select '3D printer boards'.
-Select "board part number" - BIGTREE_F207VCT6
-	
-
+5. Restart Arduino IDE. Go to Tools -> Board:... -> 'Boards manager' and select '3D printer boards'.
+Select Tools -> 'Board part number:' -> BIGTREE_F207VCT6
+6. Check Tools -> Upload method, should be set to "STM32Cube programmer(SWD)"
+7. Download and install "STM32Cube programmer" from https://www.st.com/en/development-tools/stm32cubeprog.html
+Arduino IDE uses it to upload sketches to the board. (see the following instructions for MacOS: https://community.st.com/s/question/0D50X0000BmnqrB/how-to-run-stm32cubeprogrammer-on-macos-catalina-10151-19b88)
 
 # Using board hardware
 
-Pins that can be used in projects can be found in docs/pins-names.jpg.
-(Please note that all connectors are displayed on the LCD side. )
+Pins that can be used in projects can be found in [pins-names.jpg](docs/pins-names.jpg).
+(Please note that all connectors are displayed on the LCD side)
 
-Some board hardware pins can be found on board connectors (EXP1, EXP2,EXP3), so if you using them as digital outputs you can't use board hardware connected to them.
+Some board hardware pins can be found on board connectors (EXP1, EXP2, EXP3), so if you us them as digital outputs you can't use board hardware connected to them.
 
+Board supports flashing over ST-LINK debugger and programmer over SWD interface.  
+(https://www.st.com/en/development-tools/st-link-v2.html)  
+Driver (https://www.st.com/en/development-tools/stsw-link009.html)  
+ST-LINK utility (https://www.st.com/en/development-tools/stsw-link004.html)  
 
-**Warning! Before flashing board with Arduino backup your board memory with ST-link utility.
-After flashing sketches you can`t restore board firmware from SD card. Use ST-link for restore. 
-In dump folder placed working dump of board memory.**
+You need to connect ST-LINK programmer (pins GND, SWDIO, SWCLK, 3.3V) to SWD connector on the board.
+Board can be powered from ST-LINK programmer via 3.3V pin without external power adapter for programming purposes.
+When using external power adapter you should disconnect 3.3V pin.
 
-*Can you indicate how to use ST Link do do this? Is it just connecting the USB cable to the board, or is any additional hardware needed* 
+**Warning! Before flashing board with Arduino backup your board flash with ST-LINK utility.
+After flashing sketches you will not be able to restore board's original firmware from SD card because original board's bootloader will be overwritten. 
+Use ST-LINK to restore it if you need to go back to the original firmware.**
+
+How to backup board's flash: 
+```
+1. Connect board to ST-LINK programmer and run ST-LINK utility.
+2. Click "Target" -> "Connect" 
+3. In field "Address" you should see "0x08000000" . In field "Size" paste "0x40000" and press enter.
+4. After that ST-LINK reads controller flash memory to ST-LINK Utility.
+5. Now save memory to file. Click "File" -> "Save file as..". Paste filename and press "Save" button.
+
+```
 
 
 # Board Hardware
-## Serial interface on UART4 connector on the board
-pins:
+## Serial interface on UART4 connector
+Pins:
 ```
- PC11 SERIAL_RX           
- PC10 SERIAL_TX           
+PC11 SERIAL_RX           
+PC10 SERIAL_TX           
 ```
 
- Can be used as standart Arduino serial output :   
- Serial.begin(115200);   
- Serial.println("Test");  
+Can be used as standard [Arduino serial](https://www.arduino.cc/reference/en/language/functions/communication/serial/) port:   
+```
+Serial.begin(115200);   
+Serial.println("Test");  
+```
 
 ## Buzzer 
-pin: 
+Pin: 
 ```
-PD12 BUZZER_PIN 
+PD13 BUZZER_PIN 
 ```
-You can use standart arduino function tone(PD13, Note, noteDuration);
+Standard Arduino function can be used: 
+```
+tone(PD13, Note, noteDuration);
+```
 
-example:  
-example/toneMelody/toneMelody.ino
+Example:
+[examples/toneMelody/toneMelody.ino](examples/toneMelody/toneMelody.ino)
 
 
 
 ## LCD
- LCD connected to 16 bit paralel port in FSMC mode.
+ LCD is connected to 16 bit paralel port in FSMC (Flexible Static Memory Controller) mode. More details here: [STM32L4_Memory_FSMC.pdf](https://www.st.com/content/ccc/resource/training/technical/product_training/e0/de/1c/48/51/a9/4e/2e/STM32L4_Memory_FSMC.pdf/files/STM32L4_Memory_FSMC.pdf/jcr:content/translations/en.STM32L4_Memory_FSMC.pdf)
 
-pins:
+Pins:
 ```
-PD12 - LCD backlight brightness.
+PD12 LED_BUILTIN # LCD backlight brightness control
 ```
 Brightness can be controlled by :
  ```
@@ -91,24 +121,38 @@ Brightness can be controlled by :
  pinMode(PD12, OUTPUT);
  analogWrite(PD12, brightness);
  or 
- digitalwrite(PD12,HIGH); for 100% brightness
-
-This pin has alternative name LED_BUILTIN.
+ digitalwrite(PD12, HIGH); for 100% brightness
 ```
+Board is supported by two libraries: modified Adafruit_TFTLCD_16bit_STM32 and GxTFT(support of this board is added).
+Both libraries fully support LCD. If you have experience of any of them you can use it.  
+1. Adafruit_TFTLCD_16bit_STM32 library uses [Adafruit GFX Library](https://github.com/adafruit/Adafruit-GFX-Library) (This is the core graphics library for all Adafruit displays, providing a common set of graphics primitives (points, lines, circles, etc.). So you can easy migrate your sketches with Adafruit displays to this board.  
+2. GxTFT library separates the aspects of IO connection, controller type and display class into separate C++ classes. The purpose of this Library and its design is to make additions easy. But Author of the GxTFT recommends to use the Adafruit libraries whenever possible, as these are better supported 
 
-Install library Adafruit_TFTLCD_16bit_STM32 or GxTFT from library folder.
-(Adafruit_TFTLCD_16bit_STM32 is modifyed for supporting this board. 
-In GxTFT library added support for this board)
-*Please indicate the difference between using these two libraries?* 
+Original libraries:  
+[Adafruit_TFTLCD_16bit_STM32](https://github.com/stevstrong/Adafruit_TFTLCD_16bit_STM32)  
+[GxTFT](https://github.com/ZinggJM/GxTFT)  
 
-example:  
-GxTFT library:  
- example/GxTFT-TFT35-E3_graphicstest/GxTFT-TFT35-E3_graphicstest.ino
+### 1. Adafruit_TFTLCD_16bit_STM32
+
+Install "Adafruit GFX" and "Adafruit BusIO" libraries from Arduino Library Manager.  
+Install [modified Adafruit_TFTLCD_16bit_STM32](library/Adafruit_TFTLCD_16bit_STM32/)  
+[how-to-install](https://www.arduino.cc/en/guide/libraries#toc5)
+
+Example:  
+[examples/Adafruit_TFTLCD_TFT35-E3-graphicstest/Adafruit_TFTLCD_TFT35-E3-graphicstest.ino](examples/Adafruit_TFTLCD_TFT35-E3-graphicstest/Adafruit_TFTLCD_TFT35-E3-graphicstest.ino)
  
-Adafruit_TFTLCD_16bit_STM32 library:  
- example/Adafruit_TFTLCD_TFT35-E3-graphicstest/Adafruit_TFTLCD_TFT35-E3-graphicstest.ino
+ ### 2. GxTFT
 
-FSMC GPIO Configuration, these pins can`t be used in sketches  
+Install [modified GxTFT](library/GxTFT/)
+[how-to-install](https://www.arduino.cc/en/guide/libraries#toc5)
+
+Example:  
+[examples/GxTFT-TFT35-E3_graphicstest/GxTFT-TFT35-E3_graphicstest.ino](examples/GxTFT-TFT35-E3_graphicstest/GxTFT-TFT35-E3_graphicstest.ino)
+ 
+
+### FSMC GPIO Configuration
+
+The following pins are already configured in libraries and they can`t be used in sketches:
  ```
   PE2   ------> FSMC_A23
   PE7   ------> FSMC_D4
@@ -131,35 +175,34 @@ FSMC GPIO Configuration, these pins can`t be used in sketches
   PD5   ------> FSMC_NWE
   PD7   ------> FSMC_NE1
  ```
-*Does the user have to configure these pins themselves or is that already done in the libraries?* 
 
 ## Touchscreen
-Touchscreen connected to XPT2046 chip via software SPI interface.
+Touchscreen is connected to XPT2046 chip via software SPI interface.
 
-Install library SoftSPIB, available in Arduino Library Manager(https://github.com/red-scorp/SoftSPIB).
-Install library XPT2046_Touchscreen_SWSPI (fork of XPT2046_Touchscreen by Paul Stoffregen library https://github.com/PaulStoffregen/XPT2046_Touchscreen).
+Install library [SoftSPIB](https://github.com/red-scorp/SoftSPIB) from Arduino Library Manager.
+Install library [XPT2046_Touchscreen_SWSPI](library/XPT2046_Touchscreen_SWSPI/) (fork of XPT2046_Touchscreen library by Paul Stoffregen https://github.com/PaulStoffregen/XPT2046_Touchscreen).
+[how-to-install](https://www.arduino.cc/en/guide/libraries#toc5)
 
-example:  
-examples/TouchTest/TouchTest.ino
+Example:  
+[examples/TouchTest/TouchTest.ino](examples/TouchTest/TouchTest.ino)
 
-pins can be used in other libraries or sketches
+Pins: (can be used in other libraries or sketches if touchscreen is not used)
 ```
-PC13 XPT2046_TPEN 	
-PE3	 XPT2046_MOSI
-PE4	 XPT2046_MISO
-PE5	 XPT2046_SCK 
-PE6	 XPT2046_CS 
+PC13  XPT2046_TPEN 	
+PE3   XPT2046_MOSI
+PE4   XPT2046_MISO
+PE5   XPT2046_SCK 
+PE6   XPT2046_CS 
 ```
 
 ## SDcard Connector 
-Install Adafruit_SPIFlash from Arduino Library Manager(also will be installed "SdFat_-_Adafruit_Fork" library)
-SD card can work with standart Arduino library "SD" via default "SPI" interface.(https://www.arduino.cc/en/reference/SD)
+Install library 'Adafruit_SPIFlash' from Arduino Library Manager ("SdFat_-_Adafruit_Fork" library will also be installed).
+SD card can work with standard Arduino library ["SD"](https://www.arduino.cc/en/reference/SD) via default "SPI" interface.
 
-Note: Card must be formatted in fat filesystem. Use Sdcart formatter from utilites folder.
-(SDCardFormatterv5_WinEN.zip)
+Note: Card must be formatted in FAT16 or FAT32 filesystem. Use SDcard formatter from utilites [SDCardFormatterv5_WinEN](utilites/SDCardFormatterv5_WinEN.zip)
 
 
-pins:
+Pins:
 ```
 PC4  CARD DETECT PIN
 PA4  SPI CS_PIN
@@ -168,7 +211,7 @@ PA6  SPI MISO_PIN
 PA7  SPI MOSI_PIN 
 ```
 
-using spi interface in Adafruit_SPIFlash library:
+Using SPI interface in Adafruit_SPIFlash library:
 ```
 SdFat sd(&SPI);
 #define SD_CS PA4
@@ -179,34 +222,39 @@ sd.begin(SD_CS, SD_SCK_MHZ(50));
 ```
 
 
-example:  
-examples/SdInfo/SdInfo.ino
-examples/CardInfo/CardInfo.ino for SD library
+Examples:  
+1. [examples/SdInfo/SdInfo.ino](examples/SdInfo/SdInfo.ino)
+2. [examples/CardInfo/CardInfo.ino](examples/CardInfo/CardInfo.ino)
 
 
+## W25Q64 flash
+Flash chip is connected via hardware SPI3 interface.  
+My board has BoyaMicro BY25Q64AS 8MByte SPI flash. Adafruit_SPIFlash library(version 3.2.0) does not support it.
 
-## W25Q64 flash                  
- Flash chip connected via hardware SPI3 interface
- My board has BoyaMicro BY25Q64AS 8MiB SPI flash. As of now Adafruit_SPIFlash library(version 3.2.0) does not support this chip.
+1. Install library Adafruit_SPIFlash from Arduino Library Manager("SdFat - Adafruit Fork" will be installed too)
  
- 
- At first test your flash chip. 
- run sketch 
- examples/flashinfo/flashinfo.ino
+ At first test your flash chip.
+ Run sketch: [examples/flashinfo/flashinfo.ino](examples/flashinfo/flashinfo.ino)
 
-Serial output must be look like:
+Serial console output should look like the following:
 ```
 Adafruit Serial Flash Info example
 JEDEC ID: 684017
 Flash size: 8388608
 
 ```
-if you see "Flash size: 0" that means that your flash chip is not supported 
-Lets add support of "JEDEC ID: 684017" chip if you have same.
-*NS -- OK I will check once I get back to the workshop*
+If you see "Flash size: 0" that means that your flash chip is not supported.
+Proceed to the following section to add support of "JEDEC ID: 684017" chip if you have the same.
 
-1. open Arduino libraries folder, search Adafruit_SPIFlash library folder. Open file
-"flash_devices.h" and add lines at the end of the file before last line "#endif // MICROPY_INCLUDED_ATMEL_SAMD_EXTERNAL_FLASH_DEVICES_H"
+2. Adding support of "JEDEC ID: 684017" chip.
+Replace files for this version of library or update your version of library manually (use any of the following options): 
+
+a. Replace files of Adafruit_SPIFlash library from [updated Adafruit_SPIFlash library](library/Adafruit_SPIFlash/) in Arduino libraries directory according to the [how-to](https://www.arduino.cc/en/guide/libraries#toc5)
+
+b. Manual adding support of chip.  
+
+Open Arduino libraries folder, search Adafruit_SPIFlash library folder. Open file
+	"flash_devices.h" and add lines at the end of the file before last line "#endif // MICROPY_INCLUDED_ATMEL_SAMD_EXTERNAL_FLASH_DEVICES_H"
 
 End of file will looks like this:
 ```
@@ -226,7 +274,7 @@ End of file will looks like this:
 #endif // MICROPY_INCLUDED_ATMEL_SAMD_EXTERNAL_FLASH_DEVICES_H
 ```
 
-2. Open file "Adafruit_SPIFlashBase.cpp" and after line 40 add "BY25Q64AS," 
+Open file "Adafruit_SPIFlashBase.cpp" and after line 40 add "BY25Q64AS," 
 Block of code will looks like :
 
 ```
@@ -251,20 +299,17 @@ static const SPIFlash_Device_t possible_devices[] = {
 };
 
 ```
-Than reflash flashinfo.ino sketch and check that size greater than zero.
 
-Also in library folder placed modified library. Just install it. 
-*Please clarify this, and provide instructions on how to install it?*
- 
- 
-pins:
+3. Reflash flashinfo.ino sketch and check that flash size is greater than zero.
+
+Pins:
 ```
 PB6 PIN_SPI_SS              
 PB5 PIN_SPI_MOSI            
 PB4 PIN_SPI_MISO            
 PB3 PIN_SPI_SCK             
 ```
-using spi interface in Adafruit_SPIFlash library:
+Using SPI interface in Adafruit_SPIFlash library:
  ```
  //define spi interface and flash transport
  SPIClass mflashSPI(PB5,PB4,PB3);
@@ -274,32 +319,39 @@ using spi interface in Adafruit_SPIFlash library:
  Adafruit_SPIFlash flash(&flashTransport);
  ```
 
-now you can format flash in fatfs filesystem.
-examples/SdFat_format/SdFat_format.ino 
+Format flash with fatfs filesystem:
+[examples/SdFat_format/SdFat_format.ino](examples/SdFat_format/SdFat_format.ino) 
 
-and use it for storing files
-examples/SdFat_full_usage/SdFat_full_usage.ino
+Use it for storing files:
+[examples/SdFat_full_usage/SdFat_full_usage.ino](examples/SdFat_full_usage/SdFat_full_usage.ino)
 
-You can use both SD card and flash in your sketces
-examples/flash_manipulator/flash_manipulator.ino
+You can use both SD card and flash in your sketches:
+[examples/flash_manipulator/flash_manipulator.ino](examples/flash_manipulator/flash_manipulator.ino)
 
 
-##Rotary encoder
+## Rotary encoder
 
-pins:
+Pins:
 ```
 PC8 Button
 PA8 ENCA 
 PC9 ENCB 
 ```
 
+Example:
+[examples/encoder_test/encoder_test.ino](examples/encoder_test/encoder_test.ino)
+
 
 ## USB port
-*Is this the usb port for the USB memeory stick, or the one that connects to the computer?*
+STM32DUINO supports STM32 as a USB device, for example, "Serial port or HID device(mouse and keyboard)".
+
+Use Tools -> USB Support -> CDC (Generic Serial)
+
 
 ## WS2812
- Board has 4 NEOPIXEL PIXELS
- pin:
+ Board has 4 NEOPIXEL RGB LEDs
+ 
+ Pin:
  ```
  PC7 
  ```
@@ -312,4 +364,5 @@ PC9 ENCB
 // How many NeoPixels are attached to the Arduino?
 #define NUMPIXELS 4 // Popular NeoPixel ring size
  ```
- examples/neopixel-simple/neopixel-simple.ino
+Example:
+[examples/neopixel-simple/neopixel-simple.ino](examples/neopixel-simple/neopixel-simple.ino)

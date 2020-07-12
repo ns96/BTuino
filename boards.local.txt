@@ -1,0 +1,14 @@
+# BIGTREE_F207VCT6 board
+# Support: 
+3dprinter.menu.pnum.BIGTREE_F207VC=BIGTREE F207VCT6
+#3dprinter.menu.pnum.BIGTREE_F207VC.node=NODE_F207ZG
+3dprinter.menu.pnum.BIGTREE_F207VC.upload.maximum_size=262144
+3dprinter.menu.pnum.BIGTREE_F207VC.upload.maximum_data_size=131072
+3dprinter.menu.pnum.BIGTREE_F207VC.build.mcu=cortex-m3
+3dprinter.menu.pnum.BIGTREE_F207VC.build.board=BIGTREE_F207VC
+3dprinter.menu.pnum.BIGTREE_F207VC.build.series=STM32F2xx
+3dprinter.menu.pnum.BIGTREE_F207VC.build.product_line=STM32F207xx
+3dprinter.menu.pnum.BIGTREE_F207VC.build.variant=BIGTREE_F207VC
+3dprinter.menu.pnum.BIGTREE_F207VC.build.cmsis_lib_gcc=arm_cortexM3l_math
+
+
