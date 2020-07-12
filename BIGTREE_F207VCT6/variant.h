@@ -113,6 +113,12 @@ extern "C" {
 #define PIN_SPI_SCK             PB3
 */
 
+
+// I2C Definitions
+// (the same pins as UART3)
+#define PIN_WIRE_SDA            PB11
+#define PIN_WIRE_SCL            PB10
+
 // Timer Definitions
 #define TIMER_TONE              TIM3
 //#define TIMER_SERVO             TIM7
@@ -121,10 +127,26 @@ extern "C" {
 #define SERIAL_UART_INSTANCE    4 
 // Default pin used for 'Serial' instance (ex: ST-Link)
 // Mandatory for Firmata
-#define PIN_SERIAL_RX           PC11
-#define PIN_SERIAL_TX           PC10
+//#define PIN_SERIAL_RX           PC11
+//#define PIN_SERIAL_TX           PC10
 
+/* Enable Serial */
+#define HAVE_HWSERIAL1
+#define HAVE_HWSERIAL2
+#define HAVE_HWSERIAL3
+#define HAVE_HWSERIAL4
 
+#define PIN_SERIAL1_RX           PA10
+#define PIN_SERIAL1_TX           PA9
+
+#define PIN_SERIAL2_RX           PA3
+#define PIN_SERIAL2_TX           PA2
+
+#define PIN_SERIAL3_RX           PB11
+#define PIN_SERIAL3_TX           PB10
+
+#define PIN_SERIAL4_RX           PC11
+#define PIN_SERIAL4_TX           PC10
 
 
 

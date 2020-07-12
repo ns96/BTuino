@@ -10,7 +10,8 @@ Arduino IDE 1.8.12 and 1.8.13
 - [Installation](#installation)
 - [Using board hardware](#using-board-hardware)
 - [Board Hardware](#board-hardware)
-  - [Serial interface on UART4 connector](#serial-interface-on-uart4-connector)
+  - [Serial interface](#serial-interface)
+  - [I2C interface](#i2c-interface)
   - [Buzzer](#buzzer)
   - [LCD](#lcd)
   - [Touchscreen](#touchscreen)
@@ -80,25 +81,55 @@ How to backup board's flash:
 
 
 # Board Hardware
-## Serial interface on UART4 connector
+## Serial interface
+ Board has 4 hardware serial outputs. Default Arduino's 'Serial' output is configured to UART4(RX4,TX4) connector on the board.  
+
+| Arduino instance  | Board connector  | Board pins  |
+|---|---|---|
+| Serial1 | WIFI | RX1 and TX1 |
+| Serial2 | RS232 | RX2 and TX2 |
+| Serial3 | UART3 | RX3 and TX3 |
+| Serial4 and Serial | UART4 | RX4 and TX4 |
+
 Pins:
 ```
-PC11 SERIAL_RX           
-PC10 SERIAL_TX           
+PA10 SERIAL_RX1
+PA9 SERIAL_TX1
+
+PA3 SERIAL_RX2
+PA2 SERIAL_TX2
+
+PB11 SERIAL_RX3
+PB10 SERIAL_TX3
+
+PC11 SERIAL_RX4
+PC10 SERIAL_TX4
 ```
 
-Can be used as standard [Arduino serial](https://www.arduino.cc/reference/en/language/functions/communication/serial/) port:   
+Can be used as standard [Arduino serial](https://www.arduino.cc/reference/en/language/functions/communication/serial/) ports:   
 ```
 Serial.begin(115200);   
 Serial.println("Test");  
+
+//for other serial outputs use instance Serial1 .. Serial4:
+// Serial1.begin();
+// Serial1.print();
 ```
+
+## I2C interface 
+I2C interface uses the same pins as Serial3. So both UART3 and I2C cannot be used at the same time.
+```
+PIN_WIRE_SDA            PB11
+PIN_WIRE_SCL            PB10
+```
+Use builtin library [Wire](https://www.arduino.cc/en/reference/wire).
 
 ## Buzzer 
 Pin: 
 ```
 PD13 BUZZER_PIN 
 ```
-Standard Arduino function can be used: 
+Standard Arduino function [tone()](https://www.arduino.cc/reference/en/language/functions/advanced-io/tone/) can be used: 
 ```
 tone(PD13, Note, noteDuration);
 ```
