@@ -1,4 +1,4 @@
-# Arduino STM32DUINO support for BIGTREETECH TFT35_E3_V3.0 board(BIGTREE_F207VCT6)
+# Arduino STM32DUINO support for BIGTREETECH TFT35_E3_V3.0 board
 
 Board tested with STM32DUINO core library, version 1.9.0.
 Arduino IDE 1.8.12 and 1.8.13
@@ -44,7 +44,7 @@ where "1.9.0" is version of core library.
 4. Copy board directory 'BIGTREE_F207VCT6' with files to the 'variants' subdirectory.
 
 5. Restart Arduino IDE. Go to Tools -> Board:... -> 'Boards manager' and select '3D printer boards'.
-Select Tools -> 'Board part number:' -> BIGTREE_F207VCT6
+Select Tools -> 'Board part number:' -> BIGTREETECH TFT35-E3 V3.0
 6. Check Tools -> Upload method, should be set to "STM32Cube programmer(SWD)"
 7. Download and install "STM32Cube programmer" from https://www.st.com/en/development-tools/stm32cubeprog.html
 Arduino IDE uses it to upload sketches to the board. (see the following instructions for MacOS: https://community.st.com/s/question/0D50X0000BmnqrB/how-to-run-stm32cubeprogrammer-on-macos-catalina-10151-19b88)
