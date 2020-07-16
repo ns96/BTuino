@@ -51,6 +51,7 @@ Arduino IDE uses it to upload sketches to the board. (see the following instruct
 
 # Using board hardware
 
+Original description: https://github.com/bigtreetech/BTT-TFT35-E3-V3.0/tree/master/Hardware
 Pins that can be used in projects can be found in [pins-names.jpg](docs/pins-names.jpg).
 (Please note that all connectors are displayed on the LCD side)
 
@@ -376,7 +377,21 @@ Example:
 ## USB port
 STM32DUINO supports STM32 as a USB device, for example, "Serial port or HID device(mouse and keyboard)".
 
-Use Tools -> USB Support -> CDC (Generic Serial)
+To use USB as default 'Serial' port:
+1. Select Tools -> USB Support -> CDC (Generic Serial)
+2. Use USBA Male to A Male Cable to connect board to PC
+3. Board will be detected as a USB serial port
+4. Use default 'Serial' instance to send/receive data over USB serial port:
+```
+Serial.begin(115200);   
+Serial.println("Test");  
+```
+
+To use USB as a separate 'SerialUSB' port select Tools -> USB Support (No generic 'Serial')
+```
+SerialUSB.begin(115200);   
+SerialUSB.println("Test");  
+```
 
 
 ## WS2812
