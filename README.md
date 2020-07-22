@@ -10,16 +10,16 @@ Arduino IDE 1.8.12 and 1.8.13
 - [Installation](#installation)
 - [Using board hardware](#using-board-hardware)
 - [Board Hardware](#board-hardware)
-  - [Serial interface](#serial-interface)
-  - [I2C interface](#i2c-interface)
-  - [Buzzer](#buzzer)
-  - [LCD](#lcd)
-  - [Touchscreen](#touchscreen)
-  - [SDcard Connector](#sdcard-connector)
-  - [W25Q64 flash](#w25q64-flash)
-  - [Rotary encoder](#rotary-encoder)
-  - [USB port](#usb-port)
-  - [WS2812](#ws2812)
+	- [Serial interface](#serial-interface)
+	- [I2C interface](#i2c-interface)
+	- [Buzzer](#buzzer)
+	- [LCD](#lcd)
+	- [Touchscreen](#touchscreen)
+	- [SDcard Connector](#sdcard-connector)
+	- [W25Q64 flash](#w25q64-flash)
+	- [Rotary encoder](#rotary-encoder)
+	- [USB port](#usb-port)
+	- [WS2812](#ws2812)
 
 <!-- /MarkdownTOC -->
 
@@ -266,7 +266,7 @@ My board has BoyaMicro BY25Q64AS 8MByte SPI flash. Adafruit_SPIFlash library(ver
 1. Install library Adafruit_SPIFlash from Arduino Library Manager("SdFat - Adafruit Fork" will be installed too)
  
  At first test your flash chip.
- Run sketch: [examples/flashinfo/flashinfo.ino](examples/flashinfo/flashinfo.ino)
+ Run sketch: [examples/flash_info/flash_info.ino](examples/flash_info/flash_info.ino)
 
 Serial console output should look like the following:
 ```
@@ -395,7 +395,7 @@ SerialUSB.println("Test");
 
 
 ## WS2812
- Board has 4 NEOPIXEL RGB LEDs
+ Board has 4 NEOPIXEL RGB LEDs located under the rotary encoder's knob.
  
  Pin:
  ```
