@@ -83,7 +83,7 @@ How to backup board's flash:
 
 # Board Hardware
 ## Serial interface
- Board has 4 hardware serial outputs. Default Arduino's 'Serial' output is configured to UART4(RX4,TX4) connector on the board.  
+ Board has 4 hardware serial outputs. Default Arduino's 'Serial' output is configured to UART4(RX4,TX4) connector on the board. This default can be changed, for example, to the RS232 port by changing "#define SERIAL_UART_INSTANCE 4" to “#define SERIAL_UART_INSTANCE 2” in variant.h file.
 
 | Arduino instance  | Board connector  | Board pins  |
 |---|---|---|
