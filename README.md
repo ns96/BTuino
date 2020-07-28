@@ -88,7 +88,7 @@ How to backup board's flash:
 | Arduino instance  | Board connector  | Board pins  |
 |---|---|---|
 | Serial1 | WIFI | RX1 and TX1 |
-| Serial2 | RS232 | RX2 and TX2 |
+| Serial2 | RS232 | RX2 and TX2 (pins may be labelled wrongly, if this port does not work - try to switch RX2 and TX2 pins around) |
 | Serial3 | UART3 | RX3 and TX3 |
 | Serial4 and Serial | UART4 | RX4 and TX4 |
 
