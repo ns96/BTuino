@@ -305,7 +305,7 @@ void Adafruit_TFTLCD_16bit_STM32::drawPixel(int16_t x, int16_t y, uint16_t color
 /*****************************************************************************/
 // Draw an image bitmap (16bits per color) at the specified position from the provided buffer.
 /*****************************************************************************/
-void Adafruit_TFTLCD_16bit_STM32::drawBitmap(int16_t x, int16_t y, int16_t w, int16_t h, const uint16_t * bitmap)
+void Adafruit_TFTLCD_16bit_STM32::drawRGBBitmap(int16_t x, int16_t y, int16_t w, int16_t h, const uint16_t * bitmap)
 {
 	if ( x>=0 && (x+w)<_width && y>=0 && (y+h)<=_height ) {
 		// all pixel visible, do it in the fast way
