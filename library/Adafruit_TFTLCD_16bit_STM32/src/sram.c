@@ -26,8 +26,10 @@ void fsmc_lcd_init() {
 	
 }	
 
-
-
+//read data from fmsc
+uint8_t read8_(void) {
+    return (*(uint8_t *) LCD_DATA_BASE);
+}
 
 static void HAL_FSMC_MspInit(void){
   /* USER CODE BEGIN FSMC_MspInit 0 */

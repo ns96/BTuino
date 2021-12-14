@@ -20,6 +20,7 @@
 #define ID_9341    2
 #define ID_HX8357D    3
 #define ID_9488    4
+#define ID_NT35310    5
 #define ID_UNKNOWN 0xFF
 
 /*****************************************************************************/
@@ -70,7 +71,8 @@
  // set pins to output the 8 bit value
  #define writeCmd(d)  { lcdCommand = d; }
  #define writeData(d) { lcdData = d; }
- 
+ #define read8(x) ( x = read8_() )
+
  #define WR_STROBE   writeData(color)
 
 #else
@@ -138,11 +140,7 @@
   #define writeData(d)  { writeData_(d); WR_STROBE; }
 
   // configure the pins to input
-  #if 0 // used TFT cannot be read
-    extern uint8_t read8_(void);
-    #define read8(x) ( x = read8_() )
-    #define setReadDir() { TFT_DATA_PORT->regs->CRL = 0x88888888; TFT_DATA_PORT->regs->CRH = 0x88888888; }
-  #endif // used TFT cannot be read
+ 
 
   // configure the pins to output
   #if defined (__STM32F1__)
@@ -179,22 +177,23 @@ class Adafruit_TFTLCD_16bit_STM32 : public Adafruit_GFX {
   void     setRotation(uint8_t x);
        // These methods are public in order for BMP examples to work:
   void     setAddrWindow(int16_t x1, int16_t y1, int16_t x2, int16_t y2);
-  void     invertDisplay(boolean i);
-  void     pushColors(uint16_t *data, int16_t len, boolean first);
+  void     invertDisplay(bool i);
+  void     pushColors(uint16_t *data, int16_t len, bool first);
   void     drawRGBBitmap(int16_t x, int16_t y, int16_t w, int16_t h, const uint16_t * bitmap);
   uint16_t color565(uint8_t r, uint8_t g, uint8_t b);
+  uint16_t readID(void);
 #if 0 // used TFT cannot be read
-  uint16_t readPixel(int16_t x, int16_t y),
-           readID(void);
+  uint16_t readPixel(int16_t x, int16_t y);
+
 #endif
  private:
 
-  void     init(),
-           flood(uint16_t color, uint32_t len);
+  void     init();
+  void     flood(uint16_t color, uint32_t len);
   uint8_t  driver;
 };
 
-#if 0 // used TFT cannot be read
+#if 1
 extern uint16_t readReg(uint8_t r);
 extern uint32_t readReg32(uint8_t r);
 #endif
@@ -202,7 +201,7 @@ extern uint32_t readReg32(uint8_t r);
 void inline writeCommand(uint16_t c) { CS_ACTIVE_CD_COMMAND; writeCmd(c); }
 extern void writeRegister8(uint16_t a, uint8_t d);
 extern void writeRegister16(uint16_t a, uint16_t d);
-//extern void writeRegister24(uint16_t a, uint32_t d);
+extern void writeRegister24(uint16_t a, uint32_t d);
 extern void writeRegister32(uint16_t a, uint32_t d);
 //extern void writeRegister32(uint16_t a, uint16_t d1, uint16_t d2);
 extern void writeRegisterPair(uint16_t aH, uint16_t aL, uint16_t d);

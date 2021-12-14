@@ -42,6 +42,7 @@ extern void ili9488_fillScreen(uint16_t color);
 extern void ili9488_drawPixel(int16_t x, int16_t y, uint16_t color);
 extern void ili9488_setRotation(uint8_t x);
 extern uint16_t ili9488_readPixel(int16_t x, int16_t y);
+extern void ili9488_invertDisplay(bool i);
 
 
 #endif 

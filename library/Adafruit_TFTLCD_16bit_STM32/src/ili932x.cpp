@@ -192,7 +192,7 @@ void ili932x_drawPixel(int16_t x, int16_t y, uint16_t color)
 }
 
 /*****************************************************************************/
-void ili932x_invertDisplay(boolean i)
+void ili932x_invertDisplay(bool i)
 {
 	//uint16_t r = readReg(ILI932X_GATE_SCAN_CTRL2);
 	//r = i ? (r&BIT0) : (r|BIT0);
@@ -211,9 +211,6 @@ void ili932x_setRotation(uint8_t rot)
      case 3 : t = 0x1018; _width = TFTHEIGHT; _height = TFTWIDTH; break;
     }
     writeRegister16(ILI932X_ENTRY_MOD, t ); // MADCTL
-	//Serial.print("setRotation: w: "); Serial.print(_width-1);
-    // For 932X, init default full-screen address window:
-    ili932x_setAddrWindow(0, 0, _width-1, _height-1);
 }
 
 #if 0 // used TFT does not support read access

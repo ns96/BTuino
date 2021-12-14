@@ -23,7 +23,7 @@ digitalWrite(LED_BUILTIN, HIGH);
     }
   */
   uint16_t identifier;
-#if 1
+#if 0
   identifier = 0x9341;
 #else
   tft.reset();
@@ -40,6 +40,8 @@ digitalWrite(LED_BUILTIN, HIGH);
       Serial.println(F("Found ILI9341 LCD driver"));
     } else if (identifier == 0x8357) {
       Serial.println(F("Found HX8357D LCD driver"));
+    } else if (identifier == 0x5310) {
+      Serial.println(F("Found NT35310 LCD driver"));
     } else {
       Serial.print(F("\n*** Unknown LCD driver chip: "));
       Serial.println(identifier, HEX);

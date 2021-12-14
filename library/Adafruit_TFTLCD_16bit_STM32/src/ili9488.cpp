@@ -174,10 +174,33 @@ void ili9488_drawPixel(int16_t x, int16_t y, uint16_t color)
 /*****************************************************************************/
 void ili9488_setRotation(uint8_t x)
 {
+    uint16_t t;
+
+    switch (x)
+    {
+        case 0:
+            t = (ILI9488_MADCTL_BGR | ILI9488_MADCTL_MY);
+            break;
+        case 1:
+            t = (ILI9488_MADCTL_BGR | ILI9488_MADCTL_MV | ILI9488_MADCTL_MX | ILI9488_MADCTL_MY);
+            break;
+        case 2:
+            t = (ILI9488_MADCTL_BGR | ILI9488_MADCTL_MX);
+            break;
+        case 3:
+            t = (ILI9488_MADCTL_BGR | ILI9488_MADCTL_MV);
+            break;
+    }
+
+    writeRegister8(ILI9488_MADCTL, t ); // MADCTL
 }
 
 /*****************************************************************************/
 uint16_t ili9488_readPixel(int16_t x, int16_t y)
 {
 	return 0;
-} 
+}
+
+void ili9488_invertDisplay(bool i) {
+    writeCommand(i ? ILI9488_INVERTON : ILI9488_INVERTOFF);
+}

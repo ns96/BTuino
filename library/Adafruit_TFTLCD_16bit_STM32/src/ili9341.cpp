@@ -174,6 +174,25 @@ void ili9341_drawPixel(int16_t x, int16_t y, uint16_t color)
 /*****************************************************************************/
 void ili9341_setRotation(uint8_t x)
 {
+    // MEME, HX8357D uses same registers as 9341 but different values
+    uint16_t t;
+
+    switch (x) {
+        case 1:
+            t = ILI9341_MADCTL_MX | ILI9341_MADCTL_MY | ILI9341_MADCTL_MV | ILI9341_MADCTL_BGR;
+            break;
+        case 2:
+            t = ILI9341_MADCTL_MX | ILI9341_MADCTL_BGR;
+            break;
+        case 3:
+            t = ILI9341_MADCTL_MV | ILI9341_MADCTL_BGR;
+            break;
+        case 0:
+        default:
+            t = ILI9341_MADCTL_MY | ILI9341_MADCTL_BGR;
+            break;
+    }
+    writeRegister8(ILI9341_MADCTL, t ); // MADCTL
 }
 
 /*****************************************************************************/

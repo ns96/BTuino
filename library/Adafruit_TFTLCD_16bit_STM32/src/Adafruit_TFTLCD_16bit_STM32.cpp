@@ -8,8 +8,10 @@
 
 #include "ili932x.h"
 #include "ili9341.h"
+#include "ili9488.h"
 #include "hx8347g.h"
 #include "hx8357x.h"
+#include "nt35310.h"
 
 #ifndef USE_FSCM
 volatile uint32_t *ctrl_port, *data_port;
@@ -62,7 +64,13 @@ void Adafruit_TFTLCD_16bit_STM32::begin(uint16_t id)
 	} else if(id == 0x7575) {
 		driver = ID_7575;
 		hx8347g_begin();
-	} else {
+    } else if (id == 0x5310) {
+        driver = ID_NT35310;
+        nt35310_begin();
+    } else if (id == 0x9488) {
+        driver = ID_9488;
+        ili9488_begin();
+    } else {
 		driver = ID_UNKNOWN;
 	}
 }
@@ -124,13 +132,15 @@ void Adafruit_TFTLCD_16bit_STM32::reset(void)
 /*****************************************************************************/
 void Adafruit_TFTLCD_16bit_STM32::setAddrWindow(int16_t x1, int16_t y1, int16_t x2, int16_t y2)
 {
-	if ((driver == ID_9341) || (driver == ID_HX8357D)){
+	if ((driver == ID_9341) || (driver == ID_HX8357D) || (driver == ID_9488)) {
 		ili9341_setAddrWindow(x1, y1, x2, y2);
 	} else 	if(driver == ID_932X) {
 		ili932x_setAddrWindow(x1, y1, x2, y2);
 	} else if(driver == ID_7575) {
 		hx8347g_setAddrWindow(x1, y1, x2, y2);
-	}
+	} else if(driver == ID_NT35310) {
+        nt35310_setAddrWindow(x1, y1, x2, y2);
+    }
 }
 
 /*****************************************************************************/
@@ -141,12 +151,14 @@ void Adafruit_TFTLCD_16bit_STM32::setAddrWindow(int16_t x1, int16_t y1, int16_t 
 void Adafruit_TFTLCD_16bit_STM32::flood(uint16_t color, uint32_t len)
 {
   CS_ACTIVE_CD_COMMAND;
-  if (driver == ID_9341) {
+  if ((driver == ID_9341) || (driver == ID_9488)) {
     writeCmd(ILI9341_MEMORYWRITE);
   } else if (driver == ID_932X) {
     writeCmd(ILI932X_RW_GRAM);
   } else if (driver == ID_HX8357D) {
     writeCmd(HX8357_RAMWR);
+  } else if (driver == ID_NT35310) {
+    writeCmd(NT35310_WRITE_MEMORY_START);
   } else {
     writeCmd(0x22); // Write data to GRAM
   }
@@ -261,7 +273,7 @@ void Adafruit_TFTLCD_16bit_STM32::fillScreen(uint16_t color)
     // screen rotation because some users find it disconcerting when a
     // fill does not occur top-to-bottom.
 	ili932x_fillScreen(color);
-  } else if ((driver == ID_9341) || (driver == ID_7575) || (driver == ID_HX8357D)) {
+  } else if ((driver == ID_9341) || (driver == ID_7575) || (driver == ID_HX8357D) || (driver == ID_NT35310) || (driver == ID_9488)) {
     // For these, there is no settable address pointer, instead the
     // address window must be set for each drawing operation.  However,
     // this display takes rotation into account for the parameters, no
@@ -277,7 +289,7 @@ void Adafruit_TFTLCD_16bit_STM32::drawPixel(int16_t x, int16_t y, uint16_t color
   // Clip
   if((x < 0) || (y < 0) || (x >= _width) || (y >= _height)) return;
 
- if ((driver == ID_9341) || (driver == ID_HX8357D)) {
+ if ((driver == ID_9341) || (driver == ID_HX8357D) || (driver == ID_NT35310) || (driver == ID_9488)) {
 
     setAddrWindow(x, y, x+1, y+1);
     writeRegister16(0x2C, color);
@@ -329,11 +341,11 @@ void Adafruit_TFTLCD_16bit_STM32::drawRGBBitmap(int16_t x, int16_t y, int16_t w,
 // previously been set to define the bounds.  Max 255 pixels at
 // a time (BMP examples read in small chunks due to limited RAM).
 /*****************************************************************************/
-void Adafruit_TFTLCD_16bit_STM32::pushColors(uint16_t *data, int16_t len, boolean first)
+void Adafruit_TFTLCD_16bit_STM32::pushColors(uint16_t *data, int16_t len, bool first)
 {
   CS_ACTIVE_CD_COMMAND;
   if(first == true) { // Issue GRAM write command only on first call
-    if ((driver == ID_9341) || (driver == ID_HX8357D)){
+    if ((driver == ID_9341) || (driver == ID_HX8357D) || (driver == ID_NT35310)){
        writeCmd(0x2C);
      }  else {
        writeCmd(0x22);
@@ -347,13 +359,16 @@ void Adafruit_TFTLCD_16bit_STM32::pushColors(uint16_t *data, int16_t len, boolea
 }
 
 /*****************************************************************************/
-void Adafruit_TFTLCD_16bit_STM32::invertDisplay(boolean i)
+void Adafruit_TFTLCD_16bit_STM32::invertDisplay(bool i)
 {
-	if ( driver==ID_932X ) ili932x_invertDisplay(i);
-	else if ( driver==ID_9341 ) {
+	if ( driver==ID_932X ) {
+        ili932x_invertDisplay(i);
+    } else if ( driver==ID_9341 ) {
 		writeCommand( i ? ILI9341_INVERTON : ILI9341_INVERTOFF);
 		CS_IDLE;
-	}
+	} else if ( driver==ID_9341 ) {
+        nt35310_invertDisplay(i);
+    }
 }
 /*****************************************************************************/
 // Pass 8-bit (each) R,G,B, get back 16-bit packed color
@@ -377,58 +392,21 @@ void Adafruit_TFTLCD_16bit_STM32::setRotation(uint8_t x)
   // Then perform hardware-specific rotation operations...
 
   if (driver == ID_932X) {
-
     ili932x_setRotation(x);
-
+    // For 932X, init default full-screen address window:
+    ili932x_setAddrWindow(0, 0, _width - 1, _height - 1);
   } else if (driver == ID_7575) {
-
 	hx8347g_setRotation(x);
-
   } else if (driver == ID_9341) {
-   // MEME, HX8357D uses same registers as 9341 but different values
-   uint16_t t;
-
-   switch (rotation) {
-   case 1:
-     t = ILI9341_MADCTL_MX | ILI9341_MADCTL_MY | ILI9341_MADCTL_MV | ILI9341_MADCTL_BGR;
-     break;
-   case 2:
-     t = ILI9341_MADCTL_MX | ILI9341_MADCTL_BGR;
-     break;
-   case 3:
-     t = ILI9341_MADCTL_MV | ILI9341_MADCTL_BGR;
-     break;
-   case 0:
-   default:
-    t = ILI9341_MADCTL_MY | ILI9341_MADCTL_BGR;
-    break;
-  }
-   writeRegister8(ILI9341_MADCTL, t ); // MADCTL
-   // For 9341, init default full-screen address window:
-   //setAddrWindow(0, 0, _width - 1, _height - 1); // CS_IDLE happens here
-
+    ili9341_setRotation(x);
   } else if (driver == ID_HX8357D) {
-    // MEME, HX8357D uses same registers as 9341 but different values
-    uint16_t t;
-    
-    switch (rotation) {
-      case 1:
-        t = HX8357B_MADCTL_MY | HX8357B_MADCTL_MV | HX8357B_MADCTL_RGB;
-        break;
-      case 2:
-        t = HX8357B_MADCTL_RGB;
-        break;
-      case 3:
-        t = HX8357B_MADCTL_MX | HX8357B_MADCTL_MV | HX8357B_MADCTL_RGB;
-        break;
-      case 0:
-      default:
-        t = HX8357B_MADCTL_MX | HX8357B_MADCTL_MY | HX8357B_MADCTL_RGB;
-        break;
-    }
-    writeRegister8(ILI9341_MADCTL, t ); // MADCTL
+    hx8357x_setRotation(x);
     // For 8357, init default full-screen address window:
     setAddrWindow(0, 0, _width - 1, _height - 1); // CS_IDLE happens here
+  } else if (driver == ID_NT35310) {
+    nt35310_setRotation(x);
+  } else if (driver == ID_9488) {
+    ili9488_setRotation(x);
   }
 }
 
@@ -479,6 +457,7 @@ uint16_t Adafruit_TFTLCD_16bit_STM32::readPixel(int16_t x, int16_t y)
            (           b              >> 3);
   } else return 0;
 }
+#endif // used TFT cannot be read
 
 /*****************************************************************************/
 uint16_t Adafruit_TFTLCD_16bit_STM32::readID(void)
@@ -507,7 +486,16 @@ uint16_t Adafruit_TFTLCD_16bit_STM32::readID(void)
     }
   }
 
-  uint16_t id = readReg32(0xD3);
+  uint16_t id = readReg32(0xD4);
+  if (id == 0x5310) {
+    return id;
+  }
+
+  id = readReg32(0xD3);
+  if (id == 0x9488) {
+    return id;
+  }
+
   if (id != 0x9341) {
     id = readReg(0);
   }
@@ -523,7 +511,6 @@ uint32_t readReg32(uint8_t r)
 
   // try reading register #4
   writeCommand(r);
-  setReadDir();  // Set up LCD data port(s) for READ operations
   CD_DATA;
   delayMicroseconds(50);
   read8(x);
@@ -538,7 +525,6 @@ uint32_t readReg32(uint8_t r)
   read8(x);
   id  |= x;        // shenanigans that are going on.
   CS_IDLE;
-  setWriteDir();  // Restore LCD data port(s) to WRITE configuration
   return id;
 }
 /*****************************************************************************/
@@ -548,7 +534,6 @@ uint16_t readReg(uint8_t r)
   uint8_t x;
 
   writeCommand(r);
-  setReadDir();  // Set up LCD data port(s) for READ operations
   CD_DATA;
   delayMicroseconds(10);
   read8(x);
@@ -557,13 +542,12 @@ uint16_t readReg(uint8_t r)
   read8(x);
   id |= x;        // shenanigans that are going on.
   CS_IDLE;
-  setWriteDir();  // Restore LCD data port(s) to WRITE configuration
 
   //Serial.print("Read $"); Serial.print(r, HEX); 
   //Serial.print(":\t0x"); Serial.println(id, HEX);
   return id;
 }
-#endif // used TFT cannot be read
+
 
 /*****************************************************************************/
 void writeRegister8(uint16_t a, uint8_t d)
@@ -590,16 +574,16 @@ void writeRegisterPair(uint16_t aH, uint16_t aL, uint16_t d)
   writeRegister8(aL, d);
 }
 
-/****************************************************************************
+/****************************************************************************/
 void writeRegister24(uint16_t r, uint32_t d)
 {
   writeCommand(r); // includes CS_ACTIVE
   CD_DATA;
-  write8(d >> 16);
-  write8(d >> 8);
-  write8(d);
+  writeData((d >> 16)&0x00FF);
+  writeData((d >> 8)&0x00FF);
+  writeData(d&0x00FF);
   CS_IDLE;
-}*/
+}
 
 /*****************************************************************************/
 void writeRegister32(uint16_t r, uint32_t d)

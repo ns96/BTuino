@@ -26,7 +26,7 @@ extern volatile uint16_t * fsmcCommand;
 void fsmc_lcd_init(void); 
 static void HAL_FSMC_MspInit(void);
 static void FSMC_Init(void);
-
+uint8_t read8_(void);
 
 
 

@@ -79,6 +79,25 @@ void hx8357x_drawPixel(int16_t x, int16_t y, uint16_t color)
 /*****************************************************************************/
 void hx8357x_setRotation(uint8_t x)
 {
+    // MEME, HX8357D uses same registers as 9341 but different values
+    uint16_t t;
+
+    switch (x) {
+        case 1:
+            t = HX8357B_MADCTL_MY | HX8357B_MADCTL_MV | HX8357B_MADCTL_RGB;
+            break;
+        case 2:
+            t = HX8357B_MADCTL_RGB;
+            break;
+        case 3:
+            t = HX8357B_MADCTL_MX | HX8357B_MADCTL_MV | HX8357B_MADCTL_RGB;
+            break;
+        case 0:
+        default:
+            t = HX8357B_MADCTL_MX | HX8357B_MADCTL_MY | HX8357B_MADCTL_RGB;
+            break;
+    }
+    writeRegister8(HX8357_MADCTL, t ); // MADCTL
 }
 
 /*****************************************************************************/
